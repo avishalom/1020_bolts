@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Project, PlanningBucket, VisibilityScope } from '@/types';
 import { X, FolderPlus, GitFork, Tag, Lock, Users } from 'lucide-react';
+import { DEFAULT_PROJECT_VISIBILITY } from '@/lib/creationDefaults';
 
 interface NewProjectModalProps {
   isOpen: boolean;
@@ -22,10 +23,19 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [parentId, setParentId] = useState<string>('');
-  const [visibility, setVisibility] = useState<VisibilityScope>('trusted_people');
+  const [visibility, setVisibility] = useState<VisibilityScope>(DEFAULT_PROJECT_VISIBILITY);
   const [selectedBucketIds, setSelectedBucketIds] = useState<string[]>([]);
 
   if (!isOpen) return null;
+
+  const closeAndReset = () => {
+    setTitle('');
+    setDescription('');
+    setParentId('');
+    setSelectedBucketIds([]);
+    setVisibility(DEFAULT_PROJECT_VISIBILITY);
+    onClose();
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,11 +54,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
       status: 'active'
     });
 
-    setTitle('');
-    setDescription('');
-    setParentId('');
-    setSelectedBucketIds([]);
-    onClose();
+    closeAndReset();
   };
 
   const toggleBucket = (bucketId: string) => {
@@ -71,7 +77,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
             </div>
           </div>
           <button
-            onClick={onClose}
+            onClick={closeAndReset}
             className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
           >
             <X className="h-5 w-5" />
@@ -172,7 +178,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
           <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
             <button
               type="button"
-              onClick={onClose}
+              onClick={closeAndReset}
               className="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:bg-slate-800"
             >
               Cancel

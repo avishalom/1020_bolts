@@ -27,6 +27,7 @@ import {
   MOCK_DISCUSSIONS,
   MOCK_CLUBS
 } from './mockData';
+import { createOwnedItem, createProject } from './creationDefaults';
 
 // Local storage key for persistence
 const LOCAL_STORAGE_KEY = 'craftshare_store_v1';
@@ -89,24 +90,7 @@ export function useCraftStore() {
 
   // Project Actions
   const addProject = (projectData: Partial<Project>) => {
-    const newProj: Project = {
-      id: `proj_${Date.now()}`,
-      owner_id: 'user_1',
-      parent_id: projectData.parent_id || null,
-      parent_title: projectData.parent_title,
-      title: projectData.title || 'Untitled Project',
-      description: projectData.description || '',
-      status: projectData.status || 'active',
-      visibility: projectData.visibility || 'trusted_people',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      buckets: projectData.buckets || [],
-      tasks_count: 0,
-      tasks_done_count: 0,
-      requirements_count: 0,
-      requirements_needed_count: 0,
-      questions_count: 0
-    };
+    const newProj = createProject(projectData);
 
     setState(prev => ({
       ...prev,
@@ -312,19 +296,7 @@ export function useCraftStore() {
 
   // Owned Item Actions
   const addOwnedItem = (itemData: Partial<OwnedItem>) => {
-    const newItem: OwnedItem = {
-      id: `item_${Date.now()}`,
-      owner_id: 'user_1',
-      owner_name: 'Vish (You)',
-      name: itemData.name || 'New Item',
-      category: itemData.category || 'Tools',
-      search_aliases: itemData.search_aliases || [],
-      specifications: itemData.specifications || '',
-      sharing_disposition: itemData.sharing_disposition || 'private',
-      available_quantity: itemData.available_quantity || '',
-      visibility: itemData.visibility || 'trusted_people',
-      created_at: new Date().toISOString()
-    };
+    const newItem = createOwnedItem(itemData);
 
     setState(prev => ({
       ...prev,

@@ -15,6 +15,10 @@ import {
   MessageSquare,
   Sparkles
 } from 'lucide-react';
+import {
+  DEFAULT_OWNED_ITEM_SHARING,
+  DEFAULT_OWNED_ITEM_VISIBILITY
+} from '@/lib/creationDefaults';
 
 interface CatalogViewProps {
   ownedItems: OwnedItem[];
@@ -38,7 +42,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
   const [category, setCategory] = useState('Hardware & Fasteners');
   const [specs, setSpecs] = useState('');
   const [quantity, setQuantity] = useState('1');
-  const [sharing, setSharing] = useState<SharingDisposition>('surplus_available');
+  const [sharing, setSharing] = useState<SharingDisposition>(DEFAULT_OWNED_ITEM_SHARING);
 
   const filteredItems = ownedItems.filter(item => {
     if (filter === 'my_items' && item.owner_id !== 'user_1') return false;
@@ -67,13 +71,35 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
       specifications: specs.trim(),
       available_quantity: quantity.trim(),
       sharing_disposition: sharing,
+      visibility: DEFAULT_OWNED_ITEM_VISIBILITY,
       search_aliases: name.toLowerCase().split(' ')
     });
 
     setName('');
     setSpecs('');
     setQuantity('1');
+    setSharing(DEFAULT_OWNED_ITEM_SHARING);
     setShowAddModal(false);
+  };
+
+  const closeAddModal = () => {
+    setSharing(DEFAULT_OWNED_ITEM_SHARING);
+    setShowAddModal(false);
+  };
+
+  const handleSharingChange = (item: OwnedItem, disposition: SharingDisposition) => {
+    const isNewlyShared =
+      item.sharing_disposition === 'private' &&
+      (disposition === 'available_to_lend' || disposition === 'surplus_available');
+
+    if (
+      isNewlyShared &&
+      !window.confirm(`Share “${item.name}” with people who can see this item?`)
+    ) {
+      return;
+    }
+
+    onUpdateSharing(item.id, disposition);
   };
 
   const sharingBadges: Record<SharingDisposition, { label: string; class: string }> = {
@@ -203,7 +229,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
                 {item.owner_id === 'user_1' ? (
                   <select
                     value={item.sharing_disposition}
-                    onChange={(e) => onUpdateSharing(item.id, e.target.value as SharingDisposition)}
+                    onChange={(e) => handleSharingChange(item, e.target.value as SharingDisposition)}
                     className="bg-slate-900 border border-slate-800 rounded px-2 py-1 text-[11px] text-slate-200 focus:outline-none"
                   >
                     <option value="private">Private</option>
@@ -295,7 +321,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
               <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
+                  onClick={closeAddModal}
                   className="px-4 py-2 rounded-xl text-xs text-slate-400 hover:bg-slate-800"
                 >
                   Cancel
