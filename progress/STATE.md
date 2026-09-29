@@ -1,6 +1,6 @@
 # Current repository state
 
-**Updated:** 2026-09-22
+**Updated:** 2026-09-28
 **Baseline:** `main` at `a03188f`, plus the review, planning, and privacy-default changes in the current working tree
 
 ## Executive summary
